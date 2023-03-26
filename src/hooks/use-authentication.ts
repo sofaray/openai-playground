@@ -1,4 +1,5 @@
-import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth'
+import { getAuth, onAuthStateChanged, signInWithPopup, signOut, OAuthProvider } from 'firebase/auth'
+import { useRouter } from 'next/router'
 import toast from 'react-hot-toast'
 import useLocale from './use-locale'
 import sessionStore from '@/stores/session-store'
@@ -13,7 +14,8 @@ const auth = getAuth()
 
 const useAuthentication = () => {
   const { t } = useLocale()
-  const { setSession } = sessionStore()
+  const router = useRouter()
+  const { session, setSession } = sessionStore()
 
   /**
    * Set up a listener to retrieve Firebase authentication state during screen initialization.
@@ -26,6 +28,16 @@ const useAuthentication = () => {
 
     return () => {
       removeListener()
+    }
+  }
+
+  /**
+   * This is a router guard.
+   * It prevents logged-in users from navigating to the sign-in screen.
+   */
+  const handleLoggedIn = () => {
+    if (session && router.pathname !== '/') {
+      return router.push('/')
     }
   }
 
@@ -46,9 +58,36 @@ const useAuthentication = () => {
       })
   }
 
+  /**
+   *  Pop up a screen and call social login.
+   */
+  const handleSignInWithPopup = (provider: OAuthProvider) => {
+    signInWithPopup(auth, provider)
+      .then(async (result) => {
+        OAuthProvider.credentialFromResult(result)
+        return router.push('/dashboard')
+      })
+      .catch((error) => {
+        return error
+      })
+  }
+
+  /**
+   * This is a router guard.
+   * It prevents un-logged-in users from moving to a screen that requires authentication.
+   */
+  const handleNotLoggedIn = () => {
+    if (session === null && router.pathname !== '/signin') {
+      return router.push('/signin')
+    }
+  }
+
   return {
     initAuthState,
+    handleLoggedIn,
     handleSignOut,
+    handleNotLoggedIn,
+    handleSignInWithPopup,
   }
 }
 
