@@ -1,5 +1,4 @@
 import { ReactElement, useEffect } from 'react'
-
 import DashboardFooter from '@/components/containers/dashboard/dashboard-footer'
 import DashboardHeader from '@/components/containers/dashboard/dashboard-header'
 import DashboardSidebar from '@/components/containers/dashboard/dashboard-sidebar'

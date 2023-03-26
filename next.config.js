@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
+  reactStrictMode: false,
   i18n: {
     locales: ['ja'],
     defaultLocale: 'ja',
@@ -21,6 +21,7 @@ const nextConfig = {
       },
     ],
     dangerouslyAllowSVG: true,
+    domains: ['lh3.googleusercontent.com'],
   },
 }
 
