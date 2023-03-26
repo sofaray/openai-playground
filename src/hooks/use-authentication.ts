@@ -54,7 +54,7 @@ const useAuthentication = () => {
         toast.error(t.session.signoutError)
       })
       .finally(() => {
-        location.href = '/'
+        return router.push('/signin')
       })
   }
 
