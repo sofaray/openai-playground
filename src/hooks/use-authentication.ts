@@ -1,4 +1,6 @@
-import { getAuth, onAuthStateChanged } from 'firebase/auth'
+import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth'
+import toast from 'react-hot-toast'
+import useLocale from './use-locale'
 import sessionStore from '@/stores/session-store'
 
 const auth = getAuth()
@@ -10,6 +12,7 @@ const auth = getAuth()
  */
 
 const useAuthentication = () => {
+  const { t } = useLocale()
   const { setSession } = sessionStore()
 
   /**
@@ -26,8 +29,26 @@ const useAuthentication = () => {
     }
   }
 
+  /**
+   * Sign out of Firebase and redirect to the top page.
+   */
+  const handleSignOut = () => {
+    signOut(auth)
+      .then(() => {
+        setSession(null)
+        toast.success(t.session.signoutSuccess)
+      })
+      .catch(() => {
+        toast.error(t.session.signoutError)
+      })
+      .finally(() => {
+        location.href = '/'
+      })
+  }
+
   return {
     initAuthState,
+    handleSignOut,
   }
 }
 
