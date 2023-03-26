@@ -2,6 +2,7 @@ import { getAuth, onAuthStateChanged, signInWithPopup, signOut, OAuthProvider } 
 import { useRouter } from 'next/router'
 import toast from 'react-hot-toast'
 import useLocale from './use-locale'
+import useMe from '@/hooks/use-me'
 import sessionStore from '@/stores/session-store'
 
 const auth = getAuth()
@@ -16,7 +17,7 @@ const useAuthentication = () => {
   const { t } = useLocale()
   const router = useRouter()
   const { session, setSession } = sessionStore()
-
+  const { getMe } = useMe()
   /**
    * Set up a listener to retrieve Firebase authentication state during screen initialization.
    * If logged in, also get the user's profile.
@@ -24,6 +25,10 @@ const useAuthentication = () => {
   const initAuthState = () => {
     const removeListener = onAuthStateChanged(auth, async (user) => {
       setSession(user)
+
+      if (user) {
+        await getMe(user.uid)
+      }
     })
 
     return () => {

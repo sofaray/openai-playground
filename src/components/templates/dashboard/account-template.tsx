@@ -1,6 +1,4 @@
-import { doc, getDoc, setDoc } from 'firebase/firestore'
-
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react'
 import { FieldValues, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import Box from '@/components/elements/box'
@@ -8,50 +6,40 @@ import Button from '@/components/elements/button'
 import Card from '@/components/elements/card'
 import InputGroup from '@/components/elements/input-group'
 import useLocale from '@/hooks/use-locale'
+import useMe from '@/hooks/use-me'
 import useValidation from '@/hooks/use-validation'
-import { db } from '@/plugins/firebase/init'
-import sessionStore from '@/stores/session-store'
-interface Inputs {
-  secretKey: string
-}
+import meStore from '@/stores/me-store'
 
 const AccountTemplate = () => {
   const { t } = useLocale()
-  const { session } = sessionStore()
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<Inputs>()
+  } = useForm<User>()
   const { validateRequired } = useValidation()
+  const { me } = meStore()
   const [secretKey, setSecretKey] = useState<string>('')
+  const { updateMe } = useMe()
 
   useEffect(() => {
-    if (session) {
-      const getSecretKey = async () => {
-        const docRef = doc(db, 'users', session.uid)
-        const docSnap = await getDoc(docRef)
-        if (docSnap.exists()) {
-          const { secretKey } = docSnap.data()
-          setSecretKey(secretKey)
-        }
-      }
-      getSecretKey()
+    if (me) {
+      setSecretKey(me.secretKey)
     }
-  }, [session])
-
-  if (!session) return <></>
+  }, [me])
 
   const onSubmit = (values: FieldValues) => {
     try {
-      setDoc(doc(db, 'users', session.uid), {
+      updateMe({
         secretKey: values.secretKey,
       })
+      setSecretKey(values.secretKey)
       toast.success(t.session.updateSuccess)
     } catch (e) {
       toast.error(t.session.updateError)
     }
   }
+  if (!me) return <></>
 
   return (
     <Card size={'lg'}>
