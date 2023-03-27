@@ -40,7 +40,7 @@ const AccountTemplate = () => {
       toast.error(t.session.updateError)
     }
   }
-  if (!me) return <></>
+  if (!secretKey) return <></>
 
   return (
     <>

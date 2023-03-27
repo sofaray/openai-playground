@@ -25,8 +25,6 @@ const useMe = () => {
   const updateMe = async (params: User) => {
     if (session) {
       const res = await setDoc(doc(db, 'users', session.uid), params)
-      // setMe(res)
-      console.log(res)
     }
   }
 

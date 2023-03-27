@@ -37,8 +37,8 @@ const session = {
   profileRequired: 'プロフィールを入力してください',
 
   updateButton: '更新する',
-  updateSuccess: '更新成功しました',
-  updateError: '更新失敗しました',
+  updateSuccess: '更新が成功しました',
+  updateError: '更新が失敗しました',
   suspendAccountButton: 'アカウントを停止する',
 }
 
